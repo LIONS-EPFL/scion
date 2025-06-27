@@ -57,12 +57,12 @@ Below are some pseudocode configurations for different architectures and domains
     radius = 1.0
     optim_groups = [{
         'params': input_layer,
-        'norm': 'Linear',
+        'norm': 'Spectral',
         'norm_kwargs': {'max': True},
         'scale': radius,
     }, {
         'params': hidden_layers,
-        'norm': 'Linear',
+        'norm': 'Spectral',
         'norm_kwargs': {},
         'scale': radius,
     }, {
