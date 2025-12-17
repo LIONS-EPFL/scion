@@ -111,8 +111,12 @@ class SpectralConv(Norm):
 
     def lmo(self, g):
         g = zeropower_via_newtonschulz5(g.reshape(len(g), -1), steps=self.steps).view(g.shape)
-        out_channels, in_channels, k, _ = g.shape
-        g *= (out_channels / in_channels)**0.5 / (k ** 2)
+        if g.ndim == 3:
+            out_channels, in_channels, k = g.shape
+            g *= (out_channels / in_channels)**0.5 / k
+        elif g.ndim == 4:
+            out_channels, in_channels, k, _ = g.shape
+            g *= (out_channels / in_channels)**0.5 / (k ** 2)
         return g
     
     def init(self, w):
@@ -122,8 +126,12 @@ class SpectralConv(Norm):
             for ky in range(k):
                 torch.nn.init.orthogonal_(w_fp[:,:,kx,ky])
         
-        out_channels, in_channels, k, _ = w_fp.shape
-        w_fp.mul_((out_channels / in_channels)**0.5 / (k ** 2))
+        if w.ndim == 3:
+            out_channels, in_channels, k = w_fp.shape
+            w_fp.mul_((out_channels / in_channels)**0.5 / k)
+        elif w.ndim == 4:
+            out_channels, in_channels, k, _ = w_fp.shape
+            w_fp.mul_((out_channels / in_channels)**0.5 / (k ** 2))
         w.data = w_fp.to(dtype=w.data.dtype)
         return w
 
