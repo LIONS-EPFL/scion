@@ -111,10 +111,10 @@ class SpectralConv(Norm):
 
     def lmo(self, g):
         g = zeropower_via_newtonschulz5(g.reshape(len(g), -1), steps=self.steps).view(g.shape)
-        if g.ndim == 3:    # Conv1d
+        if g.ndim == 3:
             out_channels, in_channels, k = g.shape
             g *= (out_channels / in_channels)**0.5 / k
-        elif g.ndim == 4:   # Conv2d
+        elif g.ndim == 4:
             out_channels, in_channels, k, _ = g.shape
             g *= (out_channels / in_channels)**0.5 / (k ** 2)
         return g
@@ -126,10 +126,10 @@ class SpectralConv(Norm):
             for ky in range(k):
                 torch.nn.init.orthogonal_(w_fp[:,:,kx,ky])
         
-        if w.ndim == 3:     # Conv1d
+        if w.ndim == 3:
             out_channels, in_channels, k = w_fp.shape
             w_fp.mul_((out_channels / in_channels)**0.5 / k)
-        elif w.ndim == 4:     # Conv2d
+        elif w.ndim == 4:
             out_channels, in_channels, k, _ = w_fp.shape
             w_fp.mul_((out_channels / in_channels)**0.5 / (k ** 2))
         w.data = w_fp.to(dtype=w.data.dtype)
@@ -342,16 +342,6 @@ class ScionLight(torch.optim.Optimizer):
             norm_kwargs = {}
         defaults = dict(lr=lr, momentum=momentum, scale=scale, unconstrained=unconstrained, norm=norm, norm_kwargs=norm_kwargs)
         super().__init__(params, defaults)
-        # Initialize state
-        self._store_grads_in_state()
-        # Do not pass `self` through syntactic sugar. We need the
-        # argument to not be populated.
-        self.register_state_dict_pre_hook(
-            type(self)._store_grads_in_state,
-        )
-        self.register_load_state_dict_post_hook(
-            type(self)._load_grads_from_state,
-        )
 
     def step(self):
         for group in self.param_groups:
@@ -381,27 +371,6 @@ class ScionLight(torch.optim.Optimizer):
             for p in group['params']:
                 init_func(p)
                 p.data *= scale
-
-    def __getstate__(self):
-        self._store_grads_in_state()
-        return super().__getstate__()
-
-    def __setstate__(self, state):
-        super().__setstate__(state)
-        self._load_grads_from_state()
-
-    def _store_grads_in_state(self):
-        for group in self.param_groups:
-            for param in group['params']:
-                if isinstance(param, torch.Tensor) and param.grad is not None:
-                    self.state.setdefault(param, {})['grad_state'] = param.grad
-
-    def _load_grads_from_state(self):
-        for (param, state) in self.state.items():
-            if 'grad_state' in state:
-                param.grad = state['grad_state']
-            elif isinstance(param, torch.Tensor):
-                param.grad = None
 
 
 @torch.compile
