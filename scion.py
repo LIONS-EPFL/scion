@@ -280,7 +280,7 @@ class Scion(torch.optim.Optimizer):
 
                 if momentum != 1:
                     if 'momentum_buffer' not in state.keys():
-                        state['momentum_buffer'] = torch.zeros_like(g)
+                        state['momentum_buffer'] = torch.clone(g)
                     buf = state['momentum_buffer']
                     buf.mul_(1-momentum).add_(g, alpha=momentum)
                     g = buf

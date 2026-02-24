@@ -93,6 +93,10 @@ Below are some pseudocode configurations for different architectures and domains
     optimizer = Scion(optim_groups, lr=2**-4, momentum=0.5)
     ```
 
+## Changelog
+
+- **2026-02-24 change of momentum initialization**: Instead of initializing the momentum buffer to zero, we initialize it with the gradient at initialization as required theoretically (see [Section 5](https://arxiv.org/pdf/2502.07529)), which leads to a consistent improvement experimentally.
+
 
 ## Citation
 

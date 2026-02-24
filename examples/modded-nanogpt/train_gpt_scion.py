@@ -110,7 +110,7 @@ class Scion(torch.optim.Optimizer):
 
                 if momentum != 1:
                     if 'momentum_buffer' not in state.keys():
-                        state['momentum_buffer'] = torch.zeros_like(g)
+                        state['momentum_buffer'] = torch.clone(g)
                     buf = state['momentum_buffer']
                     buf.mul_(1-momentum).add_(g, alpha=momentum)
                     g = buf
@@ -358,7 +358,7 @@ class Hyperparameters:
     n_layer : int = 12
     n_head : int = 6 # set as n_embd/128 so head_dim is 128
     n_embd : int = 768
-    unconstrained = False
+    unconstrained : bool = False
     momentum: float = 0.1
     scale : float = 50
     last_scale : float = 3000
