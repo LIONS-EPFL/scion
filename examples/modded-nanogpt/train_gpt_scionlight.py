@@ -387,7 +387,7 @@ class Hyperparameters:
     n_layer : int = 12
     n_head : int = 6 # set as n_embd/128 so head_dim is 128
     n_embd : int = 768
-    unconstrained = False
+    unconstrained : bool = False
     momentum: float = 0.1
     scale : float = 50
     last_scale : float = 3000
