@@ -8,7 +8,7 @@ This code builds on [modded-nanogpt](https://github.com/KellerJordan/modded-nano
 pip install -r requirements.txt
 pip install -r data/requirements.txt
 pip install torch --index-url https://download.pytorch.org/whl/cu124 --upgrade
-python data/cached_fineweb10B.py 8 # downloads only the first 800M training tokens to save time
+python data/cached_fineweb10B.py 24 # downloads only the first 2.4B training tokens to save time
 ```
 
 ## Run
